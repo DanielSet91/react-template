@@ -1,4 +1,4 @@
-import { mainConfig } from "../config/config";
+import { mainConfig } from "./config";
 
 async function get<T>(endpoint: string): Promise<T> {
   const response = await fetch(`${mainConfig.API_BASE_URL}${endpoint}`);

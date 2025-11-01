@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import MainLayout from "../layout/mainLayout/MainLayout";
 import HomePage from "../pages/homepage/Homepage";
 
-function RootNavigator() {
+function Routing() {
   return (
     <>
       <Routes>
@@ -15,4 +15,4 @@ function RootNavigator() {
   );
 }
 
-export default RootNavigator;
+export default Routing;

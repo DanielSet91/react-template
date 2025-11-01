@@ -2,7 +2,7 @@ import "./App.css";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import RootNavigator from "./navigators/RootNavigator";
+import Routing from "./Router/Routing";
 
 const queryClient = new QueryClient();
 
@@ -11,7 +11,7 @@ function App() {
     <>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <RootNavigator />
+          <Routing />
         </BrowserRouter>
       </QueryClientProvider>
     </>
