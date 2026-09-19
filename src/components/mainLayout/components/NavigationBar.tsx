@@ -13,12 +13,11 @@ import {
   ListItemText,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "@tanstack/react-router";
 
 const navItems = [
   { label: "Home", path: "/" },
-  { label: "Contact", path: "/contact" },
-];
+] as const;
 
 export default function NavigationBar() {
   const [mobileOpen, setMobileOpen] = React.useState(false);

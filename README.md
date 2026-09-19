@@ -1,5 +1,75 @@
 # React + TypeScript + Vite
 
+## Project setup
+
+Copy `.env.example` to `.env` and set `VITE_API_BASE_URL` to your backend's
+browser-accessible URL, without a trailing slash. In PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+The example uses port 8000 as a placeholder; this repository does not include a
+backend. Requests originate in the browser, so a Docker service name is usually
+not an appropriate API URL. Your backend must allow the frontend origin when
+using cross-origin requests. All `VITE_` values are public; never use them for secrets.
+
+For local development with Node 22.12 or newer:
+
+```sh
+npm ci
+npm run dev
+```
+
+## Docker development
+
+Start Docker Desktop with Linux containers, then run:
+
+```sh
+docker compose up --build
+```
+
+Open http://localhost:3000. Source files are mounted for hot reload; dependencies
+stay inside the container. File polling is enabled for Docker Desktop mounts.
+After dependency changes, run `docker compose up --build --renew-anon-volumes`
+to refresh the container's dependency volume.
+
+Stop with `docker compose down`.
+
+## Docker production
+
+```sh
+docker compose -f docker-compose.prod.yml up --build -d
+```
+
+Open http://localhost:8080. This separate Compose configuration builds the app
+and serves `dist` through Nginx, with an HTML fallback for client-side routes.
+It does not mount source files or run the Vite development server.
+
+`VITE_API_BASE_URL` is passed from `.env` as a build argument. Vite embeds it at
+build time, so changing the backend URL requires rebuilding the image. Environment
+files are excluded from the Docker build context.
+
+Stop with `docker compose -f docker-compose.prod.yml down`.
+
+## Original Vite template notes
+ 
+### Routing and server data
+
+The app uses TanStack Router with code-based routes in `src/Router/router.ts`.
+Add routes with `createRoute`, attach them to the route tree, and use TanStack
+`Link` for navigation. Router registration supplies application-wide route types.
+Unknown URLs render a not-found page. The Contact navigation entry was removed
+because this template has no Contact page.
+
+TanStack Query owns the server-data cache. The same `queryClient` is provided to
+React and the router context, so route loaders can call
+`context.queryClient.ensureQueryData(queryOptions)` and components can consume
+those same options with `useQuery` or `useSuspenseQuery`. Keep query keys and
+query functions together per feature. Intent preloading is enabled; Query
+controls the freshness of prefetched data. No backend requests are made until
+you add a query for your API.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
