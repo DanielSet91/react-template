@@ -52,9 +52,7 @@ files are excluded from the Docker build context.
 
 Stop with `docker compose -f docker-compose.prod.yml down`.
 
-## Original Vite template notes
- 
-### Routing and server data
+## Routing and server data
 
 The app uses TanStack Router with code-based routes in `src/Router/router.ts`.
 Add routes with `createRoute`, attach them to the route tree, and use TanStack
@@ -69,6 +67,35 @@ those same options with `useQuery` or `useSuspenseQuery`. Keep query keys and
 query functions together per feature. Intent preloading is enabled; Query
 controls the freshness of prefetched data. No backend requests are made until
 you add a query for your API.
+
+## API client
+
+`src/api/apiClient.ts` exports a shared Ky client. It uses `VITE_API_BASE_URL`
+as a prefix, preserving API path segments even when an endpoint starts with `/`.
+Missing configuration throws when the client is first imported. Ky retries are
+disabled so TanStack Query owns retry policy; the client uses a 15-second timeout.
+
+Pass the query's abort signal through to enable request cancellation:
+
+```ts
+import { queryOptions } from '@tanstack/react-query';
+import { apiClient } from './api/apiClient';
+
+type User = { id: string; name: string };
+
+export const usersQueryOptions = queryOptions({
+  queryKey: ['users'],
+  queryFn: ({ signal }) => apiClient.get('users', { signal }).json<User[]>(),
+});
+```
+
+For mutations, use methods such as
+`apiClient.post('users', { json: { name: 'Alex' } }).json<User>()`.
+For endpoints returning no content, await the request without calling `.json()`.
+Non-success responses throw Ky's `HTTPError`, preserving the response and status.
+Type parameters describe expected JSON; they do not validate it at runtime.
+
+## Original Vite template notes
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
