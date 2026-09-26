@@ -1,9 +1,12 @@
-# React + TypeScript + Vite
+﻿# React + TypeScript + Vite
+
+New to this repository? Start with the [developer onboarding guide](onboarding.md).
 
 ## Project setup
 
-Copy `.env.example` to `.env` and set `VITE_API_BASE_URL` to your backend's
-browser-accessible URL, without a trailing slash. In PowerShell:
+Copy `.env.example` to `.env` to use the demo without a backend. When connecting
+a backend, disable mocks and set `VITE_API_BASE_URL` to its browser-accessible
+URL, without a trailing slash. In PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
@@ -14,10 +17,11 @@ backend. Requests originate in the browser, so a Docker service name is usually
 not an appropriate API URL. Your backend must allow the frontend origin when
 using cross-origin requests. All `VITE_` values are public; never use them for secrets.
 
-For local development with Node 22.12 or newer:
+For local development with Node 22.13 or newer:
 
 ```sh
 npm ci
+npm run setup -- my-app
 npm run dev
 ```
 
@@ -52,6 +56,55 @@ files are excluded from the Docker build context.
 
 Stop with `docker compose -f docker-compose.prod.yml down`.
 
+## Starter features
+
+Open `/projects` for a complete list/create/detail/edit/delete example. It uses
+the shared Ky client, TanStack Query cache keys, runtime Zod response validation,
+React Hook Form, reusable MUI form fields, and mutation notifications. Detail
+loaders share query options with their components. Failed requests display
+readable messages with retry actions; route failures have a recovery screen.
+
+`npm run setup -- my-app` copies `.env.example` only if `.env` does not exist,
+renames package and lockfile metadata, updates the HTML title, and checks API
+configuration. The name is optional. Branding in the navigation remains yours
+to customize.
+
+Development mocks are enabled in `.env.example`. MSW intercepts project API
+requests in the browser; demo data resets when the page reloads. Mocks start
+only in Vite development mode. To connect your backend, set
+`VITE_ENABLE_MOCKS=false` and set `VITE_API_BASE_URL`. Production always requires
+a real API URL. Copying environment variables into production does not enable
+the mock API.
+
+Generate a feature with `npm run generate:feature -- orders`. This creates a
+page, validated list query, feature query keys, and a registered `/orders`
+route. It refuses existing files and invalid names. Update the generated schema
+and endpoint, add a mock handler or backend implementation, and add a TanStack
+navigation Link. Generated features deliberately do not invent your data model.
+
+Backend contracts to implement when needed:
+
+- Projects: `GET /projects` returns an array; `POST /projects` and
+  `PUT /projects/:id` accept `{ name, description }` and return
+  `{ id, name, description }`; `GET /projects/:id` returns that object;
+  `DELETE /projects/:id` returns 204.
+- Session: the optional `sessionQuery` calls `GET /session` with cookies and
+  expects `{ id, name, permissions: string[] }`, or 401 for a signed-out user.
+  No authentication requests run by default. Add your provider's login/logout
+  flow, CSRF protection where required, and enforce authorization on the server.
+  `hasPermission` supports conditional UI; it is not a security boundary.
+- Uploads: `uploadFile` sends multipart `file` to `POST /uploads`, supports
+  cancellation, checks a 10 MB client limit, and validates `{ id, url }`.
+  Implement server-side size/type checks and access control before using it.
+
+## Checks
+
+Run `npm run check` for lint, TypeScript/production build, focused Vitest
+behavioral tests, and isolated setup/generator tests. `npm test` starts the
+Vitest watcher. Test utilities provide MUI, toast, and Query providers; MSW
+supplies API fixtures without a running backend. GitHub Actions runs these
+checks on pushes and pull requests.
+
 ## Routing and server data
 
 The app uses TanStack Router with code-based routes in `src/Router/router.ts`.
@@ -65,14 +118,15 @@ React and the router context, so route loaders can call
 `context.queryClient.ensureQueryData(queryOptions)` and components can consume
 those same options with `useQuery` or `useSuspenseQuery`. Keep query keys and
 query functions together per feature. Intent preloading is enabled; Query
-controls the freshness of prefetched data. No backend requests are made until
-you add a query for your API.
+controls the freshness of prefetched data. The projects routes demonstrate
+these patterns against the development mock API or your configured backend.
 
 ## API client
 
 `src/api/apiClient.ts` exports a shared Ky client. It uses `VITE_API_BASE_URL`
 as a prefix, preserving API path segments even when an endpoint starts with `/`.
-Missing configuration throws when the client is first imported. Ky retries are
+Missing configuration throws when the client is first imported, except in
+development with mocks enabled, where a same-origin `/api` URL is used. Ky retries are
 disabled so TanStack Query owns retry policy; the client uses a 15-second timeout.
 
 Pass the query's abort signal through to enable request cancellation:
@@ -94,77 +148,3 @@ For mutations, use methods such as
 For endpoints returning no content, await the request without calling `.json()`.
 Non-success responses throw Ky's `HTTPError`, preserving the response and status.
 Type parameters describe expected JSON; they do not validate it at runtime.
-
-## Original Vite template notes
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```

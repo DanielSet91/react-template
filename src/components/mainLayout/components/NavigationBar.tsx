@@ -13,7 +13,8 @@ export default function NavigationBar() {
             <Typography fontWeight={700} letterSpacing="-0.5px">React Template<Typography component="span" sx={{ color: "primary.main" }}>.</Typography></Typography>
           </Stack>
           <Stack component="nav" aria-label="Main navigation" direction="row" spacing={1}>
-            <Button component={Link} to="/" aria-current="page" sx={{ color: "text.primary" }}>Home</Button>
+            <Button component={Link} to="/" activeProps={{ "aria-current": "page" }} activeOptions={{ exact: true }} sx={{ color: "text.primary" }}>Home</Button>
+            <Button component={Link} to="/projects" activeProps={{ "aria-current": "page" }}>Projects</Button>
             <Button component="a" href="https://mui.com/material-ui/getting-started/" target="_blank" rel="noopener noreferrer" endIcon={<ArrowOutwardRoundedIcon />} sx={{ display: { xs: "none", sm: "inline-flex" }, color: "text.secondary" }}>MUI docs</Button>
           </Stack>
         </Stack>

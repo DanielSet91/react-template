@@ -28,7 +28,7 @@
 ## Verification
 
 - After code or dependency changes, run `npm run build` and `npm run lint`. On PowerShell systems that block npm's script shim, use `npm.cmd`.
-- There is currently no automated test script. Add focused behavioral tests when warranted; do not claim tests were run if they were not.
+- Run `npm run test:run` for core feature changes; this includes Vitest behavioral tests and isolated setup/generator checks. Add focused tests when warranted; do not claim tests were run if they were not.
 - For Compose changes, validate with `docker compose --env-file .env.example config --quiet` and `docker compose --env-file .env.example -f docker-compose.prod.yml config --quiet`.
 - Documentation-only changes do not require a build. Check the diff for formatting errors and keep README instructions accurate.
 - Preserve unrelated user changes. Report what changed, verification performed, and any checks that could not run.
