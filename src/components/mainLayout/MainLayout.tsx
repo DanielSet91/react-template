@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { Outlet } from "@tanstack/react-router";
 
 import NavigationBar from "./components/NavigationBar";
@@ -11,13 +11,13 @@ export default function MainLayout() {
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
-        width: "100vw",
+        width: "100%",
       }}
     >
       <NavigationBar />
-      <Box sx={{ flex: 1, py: 4, px: { xs: 0, sm: 6 } }}>
+      <Container component="main" maxWidth="lg" sx={{ flex: 1, py: { xs: 5, md: 9 } }}>
         <Outlet />
-      </Box>
+      </Container>
       <Footer />
     </Box>
   );
