@@ -1,10 +1,10 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
 export interface ToastContextType {
   showToast: (
     message: string,
-    type: "success" | "error" | "info" | "warning",
-    duration?: number
+    type: 'success' | 'error' | 'info' | 'warning',
+    duration?: number,
   ) => void;
 }
 

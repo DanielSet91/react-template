@@ -1,7 +1,7 @@
-import { RouterProvider } from "@tanstack/react-router";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider } from '@tanstack/react-router';
+import { QueryClientProvider } from '@tanstack/react-query';
 
-import { queryClient, router } from "./Router/router";
+import { queryClient, router } from './Router/router';
 
 function App() {
   return (

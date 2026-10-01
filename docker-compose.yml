@@ -5,10 +5,10 @@ services:
       dockerfile: dockerfile
       target: development
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ./:/app
       - /app/node_modules
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:?Set VITE_API_BASE_URL in .env}
-      VITE_USE_POLLING: "true"
+      VITE_USE_POLLING: 'true'

@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography } from '@mui/material';
 
 interface ErrorMessageProps {
   error: string;
@@ -7,7 +7,7 @@ interface ErrorMessageProps {
 const ErrorMessage = ({ error }: ErrorMessageProps) => {
   return (
     <Box>
-      <Typography color={"error"} sx={{ fontSize: "14px" }}>
+      <Typography color={'error'} sx={{ fontSize: '14px' }}>
         Error: {error}
       </Typography>
     </Box>

@@ -99,7 +99,13 @@ Backend contracts to implement when needed:
 
 ## Checks
 
-Run `npm run check` for lint, TypeScript/production build, focused Vitest
+Run `npm run format` to format the project with Prettier, or
+`npm run format:check` to check formatting without changing files.
+The pre-push Git hook runs `format:check` and blocks a push if formatting needs
+fixing. Run `npm run format`, then commit the resulting changes before pushing.
+The hook is installed when you run `npm install` or `npm ci`.
+
+Run `npm run check` for formatting, lint, TypeScript/production build, focused Vitest
 behavioral tests, and isolated setup/generator tests. `npm test` starts the
 Vitest watcher. Test utilities provide MUI, toast, and Query providers; MSW
 supplies API fixtures without a running backend. GitHub Actions runs these
